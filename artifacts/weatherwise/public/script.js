@@ -3,7 +3,7 @@
    Vanilla JavaScript · WeatherAPI.com
 ───────────────────────────────────────────── */
 
-const API_BASE = "/api";
+const API_BASE = "26f52f5124764170b83110956262206";
 
 /* ── Unit state ── */
 let unit = "F"; // "F" or "C"
