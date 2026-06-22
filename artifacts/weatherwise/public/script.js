@@ -3,24 +3,24 @@
    Vanilla JavaScript · WeatherAPI.com
 ───────────────────────────────────────────── */
 
-const WEATHER_API_KEY = "YOUR_API_KEY_HERE";
+const WEATHER_API_KEY = "26f52f5124764170b83110956262206";
 const BASE_URL = "https://api.weatherapi.com/v1";
 
 /* ── DOM refs ── */
-const searchForm     = document.getElementById("searchForm");
-const cityInput      = document.getElementById("cityInput");
-const searchError    = document.getElementById("searchError");
-const loadingState   = document.getElementById("loadingState");
+const searchForm = document.getElementById("searchForm");
+const cityInput = document.getElementById("cityInput");
+const searchError = document.getElementById("searchError");
+const loadingState = document.getElementById("loadingState");
 const resultsSection = document.getElementById("resultsSection");
-const landingHints   = document.getElementById("landingHints");
-const footerYear     = document.getElementById("footerYear");
+const landingHints = document.getElementById("landingHints");
+const footerYear = document.getElementById("footerYear");
 
 /* Set footer year */
 if (footerYear) footerYear.textContent = new Date().getFullYear();
 
 /* ── Utility helpers ── */
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const lerp  = (a, b, t) => a + (b - a) * clamp(t, 0, 1);
+const lerp = (a, b, t) => a + (b - a) * clamp(t, 0, 1);
 
 function scoreColor(score) {
   if (score >= 70) return "high";
@@ -29,7 +29,9 @@ function scoreColor(score) {
 }
 
 /* Temperature conversion (API returns both C and F) */
-function fmtTemp(f) { return Math.round(f) + "°F"; }
+function fmtTemp(f) {
+  return Math.round(f) + "°F";
+}
 
 /* ── Scoring algorithms ── */
 
@@ -38,9 +40,9 @@ function fmtTemp(f) { return Math.round(f) + "°F"; }
  * Ideal: 50–65°F, humidity 40–60%, UV <3, AQI <50, no rain
  */
 function calcRunningScore(d) {
-  const f   = d.current.temp_f;
+  const f = d.current.temp_f;
   const hum = d.current.humidity;
-  const uv  = d.current.uv;
+  const uv = d.current.uv;
   const aqi = d.current.air_quality?.["us-epa-index"] ?? 1;
   const rain = d.forecast.forecastday[0].day.daily_chance_of_rain;
 
@@ -71,9 +73,9 @@ function calcRunningScore(d) {
  * Ideal: low humidity, good wind, sunny, no rain
  */
 function calcLaundryScore(d) {
-  const hum   = d.current.humidity;
-  const wind  = d.current.wind_mph;
-  const rain  = d.forecast.forecastday[0].day.daily_chance_of_rain;
+  const hum = d.current.humidity;
+  const wind = d.current.wind_mph;
+  const rain = d.forecast.forecastday[0].day.daily_chance_of_rain;
   const cloud = d.current.cloud;
 
   let s = 100;
@@ -101,20 +103,20 @@ function calcLaundryScore(d) {
  */
 function calcFrizzRisk(d) {
   const hum = d.current.humidity;
-  if (hum >= 75) return { level: "High",   cls: "high", score: 100 };
+  if (hum >= 75) return { level: "High", cls: "high", score: 100 };
   if (hum >= 55) return { level: "Moderate", cls: "med", score: 55 };
-  return              { level: "Low",    cls: "low",  score: 20 };
+  return { level: "Low", cls: "low", score: 20 };
 }
 
 /**
  * Outdoor Activity Score (0–100)
  */
 function calcOutdoorScore(d) {
-  const f    = d.current.temp_f;
-  const uv   = d.current.uv;
-  const aqi  = d.current.air_quality?.["us-epa-index"] ?? 1;
-  const rain  = d.forecast.forecastday[0].day.daily_chance_of_rain;
-  const wind  = d.current.wind_mph;
+  const f = d.current.temp_f;
+  const uv = d.current.uv;
+  const aqi = d.current.air_quality?.["us-epa-index"] ?? 1;
+  const rain = d.forecast.forecastday[0].day.daily_chance_of_rain;
+  const wind = d.current.wind_mph;
 
   let s = 100;
   if (f < 35 || f > 100) s -= 45;
@@ -141,8 +143,8 @@ function calcOutdoorScore(d) {
  * Based on tonight's low temp and humidity
  */
 function calcSleepScore(d) {
-  const lowF  = d.forecast.forecastday[0].day.mintemp_f;
-  const hum   = d.current.humidity;
+  const lowF = d.forecast.forecastday[0].day.mintemp_f;
+  const hum = d.current.humidity;
 
   let s = 100;
   // Ideal sleep temp: 60–67°F
@@ -160,10 +162,10 @@ function calcSleepScore(d) {
  * Bike Ride Score (0–100)
  */
 function calcBikeScore(d) {
-  const f    = d.current.temp_f;
+  const f = d.current.temp_f;
   const wind = d.current.wind_mph;
-  const rain  = d.forecast.forecastday[0].day.daily_chance_of_rain;
-  const uv   = d.current.uv;
+  const rain = d.forecast.forecastday[0].day.daily_chance_of_rain;
+  const uv = d.current.uv;
 
   let s = 100;
   if (f < 35 || f > 95) s -= 45;
@@ -184,7 +186,15 @@ function calcBikeScore(d) {
 
 /* ── AQI label ── */
 function aqiLabel(idx) {
-  const labels = ["—","Good","Moderate","Unhealthy for Sensitive","Unhealthy","Very Unhealthy","Hazardous"];
+  const labels = [
+    "—",
+    "Good",
+    "Moderate",
+    "Unhealthy for Sensitive",
+    "Unhealthy",
+    "Very Unhealthy",
+    "Hazardous",
+  ];
   return labels[clamp(idx, 0, 6)] ?? "—";
 }
 
@@ -196,7 +206,7 @@ function weatherIcon(iconUrl) {
 }
 
 /* ── Day-of-week ── */
-const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 function dayName(dateStr, isToday) {
   if (isToday) return "Today";
   const d = new Date(dateStr + "T12:00:00");
@@ -205,12 +215,12 @@ function dayName(dateStr, isToday) {
 
 /* ── Generate narrative summary ── */
 function buildSummary(d, scores) {
-  const f      = d.current.temp_f;
-  const hum    = d.current.humidity;
-  const cond   = d.current.condition.text;
-  const rain   = d.forecast.forecastday[0].day.daily_chance_of_rain;
+  const f = d.current.temp_f;
+  const hum = d.current.humidity;
+  const cond = d.current.condition.text;
+  const rain = d.forecast.forecastday[0].day.daily_chance_of_rain;
   const sunset = d.forecast.forecastday[0].astro.sunset;
-  const aqi    = d.current.air_quality?.["us-epa-index"] ?? 1;
+  const aqi = d.current.air_quality?.["us-epa-index"] ?? 1;
 
   // Temp description
   let tempDesc = "comfortable";
@@ -234,34 +244,48 @@ function buildSummary(d, scores) {
   const bullets = [];
 
   // Running
-  if (scores.running >= 70) bullets.push("Great day for a run — conditions are ideal.");
-  else if (scores.running >= 40) bullets.push("Running is possible but not ideal — stay hydrated.");
+  if (scores.running >= 70)
+    bullets.push("Great day for a run — conditions are ideal.");
+  else if (scores.running >= 40)
+    bullets.push("Running is possible but not ideal — stay hydrated.");
   else bullets.push("Skip outdoor running today — conditions are poor.");
 
   // Laundry
-  if (scores.laundry >= 70) bullets.push("Clothes will dry well outside — good laundry day.");
-  else if (scores.laundry >= 40) bullets.push("Laundry may take longer — check rain before hanging.");
+  if (scores.laundry >= 70)
+    bullets.push("Clothes will dry well outside — good laundry day.");
+  else if (scores.laundry >= 40)
+    bullets.push("Laundry may take longer — check rain before hanging.");
   else bullets.push("Avoid outdoor drying — rain or high humidity today.");
 
   // Frizz
-  if (scores.frizz.level === "High") bullets.push("High frizz risk — consider anti-humidity hair products.");
-  else if (scores.frizz.level === "Moderate") bullets.push("Moderate frizz risk — hair may need extra attention.");
+  if (scores.frizz.level === "High")
+    bullets.push("High frizz risk — consider anti-humidity hair products.");
+  else if (scores.frizz.level === "Moderate")
+    bullets.push("Moderate frizz risk — hair may need extra attention.");
 
   // Outdoor
-  if (scores.outdoor >= 70) bullets.push("Outdoor plans look great — enjoy the day.");
-  else if (scores.outdoor >= 40) bullets.push("Outdoor activities are manageable with precautions.");
-  else bullets.push("Consider rescheduling outdoor plans — not ideal conditions.");
+  if (scores.outdoor >= 70)
+    bullets.push("Outdoor plans look great — enjoy the day.");
+  else if (scores.outdoor >= 40)
+    bullets.push("Outdoor activities are manageable with precautions.");
+  else
+    bullets.push("Consider rescheduling outdoor plans — not ideal conditions.");
 
   // Bike
-  if (scores.bike >= 70) bullets.push("Excellent day to ride — grab your bike.");
-  else if (scores.bike < 40) bullets.push("Biking not recommended today due to wind or rain.");
+  if (scores.bike >= 70)
+    bullets.push("Excellent day to ride — grab your bike.");
+  else if (scores.bike < 40)
+    bullets.push("Biking not recommended today due to wind or rain.");
 
   // Sleep
-  if (scores.sleep >= 70) bullets.push("Tonight should be comfortable for sleep.");
-  else if (scores.sleep < 40) bullets.push("Sleep comfort may be poor — consider AC or extra blankets.");
+  if (scores.sleep >= 70)
+    bullets.push("Tonight should be comfortable for sleep.");
+  else if (scores.sleep < 40)
+    bullets.push("Sleep comfort may be poor — consider AC or extra blankets.");
 
   // AQI
-  if (aqi >= 4) bullets.push("Air quality is poor — limit prolonged outdoor exposure.");
+  if (aqi >= 4)
+    bullets.push("Air quality is poor — limit prolonged outdoor exposure.");
 
   // Sunset tip
   if (scores.running < 60 && scores.outdoor < 60) {
@@ -278,26 +302,70 @@ function buildSummary(d, scores) {
 
 function renderStatGrid(d) {
   const grid = document.getElementById("statGrid");
-  const aqi  = d.current.air_quality?.["us-epa-index"] ?? null;
+  const aqi = d.current.air_quality?.["us-epa-index"] ?? null;
 
   const stats = [
-    { label: "Feels Like",    value: fmtTemp(d.current.feelslike_f),               desc: d.current.temp_f > d.current.feelslike_f ? "Cooler than actual" : "Warmer than actual" },
-    { label: "Humidity",      value: d.current.humidity + "%",                      desc: d.current.humidity > 65 ? "High — frizz risk" : "Comfortable" },
-    { label: "UV Index",      value: d.current.uv,                                  desc: d.current.uv >= 8 ? "Very high — wear SPF" : d.current.uv >= 6 ? "High" : "Moderate or lower" },
-    { label: "Wind",          value: Math.round(d.current.wind_mph) + " mph",       desc: d.current.wind_dir },
-    { label: "AQI",           value: aqi ? aqiLabel(aqi) : "N/A",                  desc: aqi ? `Index ${aqi}/6` : "" },
-    { label: "Rain Chance",   value: d.forecast.forecastday[0].day.daily_chance_of_rain + "%", desc: "Today's probability" },
-    { label: "Sunrise",       value: d.forecast.forecastday[0].astro.sunrise,       desc: "Local time" },
-    { label: "Sunset",        value: d.forecast.forecastday[0].astro.sunset,        desc: "Local time" },
+    {
+      label: "Feels Like",
+      value: fmtTemp(d.current.feelslike_f),
+      desc:
+        d.current.temp_f > d.current.feelslike_f
+          ? "Cooler than actual"
+          : "Warmer than actual",
+    },
+    {
+      label: "Humidity",
+      value: d.current.humidity + "%",
+      desc: d.current.humidity > 65 ? "High — frizz risk" : "Comfortable",
+    },
+    {
+      label: "UV Index",
+      value: d.current.uv,
+      desc:
+        d.current.uv >= 8
+          ? "Very high — wear SPF"
+          : d.current.uv >= 6
+            ? "High"
+            : "Moderate or lower",
+    },
+    {
+      label: "Wind",
+      value: Math.round(d.current.wind_mph) + " mph",
+      desc: d.current.wind_dir,
+    },
+    {
+      label: "AQI",
+      value: aqi ? aqiLabel(aqi) : "N/A",
+      desc: aqi ? `Index ${aqi}/6` : "",
+    },
+    {
+      label: "Rain Chance",
+      value: d.forecast.forecastday[0].day.daily_chance_of_rain + "%",
+      desc: "Today's probability",
+    },
+    {
+      label: "Sunrise",
+      value: d.forecast.forecastday[0].astro.sunrise,
+      desc: "Local time",
+    },
+    {
+      label: "Sunset",
+      value: d.forecast.forecastday[0].astro.sunset,
+      desc: "Local time",
+    },
   ];
 
-  grid.innerHTML = stats.map(st => `
+  grid.innerHTML = stats
+    .map(
+      (st) => `
     <div class="stat-pill" role="listitem">
       <span class="stat-label">${st.label}</span>
       <span class="stat-value">${st.value}</span>
       ${st.desc ? `<span class="stat-desc">${st.desc}</span>` : ""}
     </div>
-  `).join("");
+  `,
+    )
+    .join("");
 }
 
 function renderCani(scores) {
@@ -308,49 +376,79 @@ function renderCani(scores) {
       label: "Run Today",
       icon: "🏃",
       ok: scores.running >= 60 ? "yes" : scores.running >= 35 ? "warn" : "no",
-      reason: scores.running >= 60 ? "Conditions are good for running" :
-              scores.running >= 35 ? "Manageable with precautions"   : "Not a great day to run"
+      reason:
+        scores.running >= 60
+          ? "Conditions are good for running"
+          : scores.running >= 35
+            ? "Manageable with precautions"
+            : "Not a great day to run",
     },
     {
       label: "Ride A Bike",
       icon: "🚴",
       ok: scores.bike >= 60 ? "yes" : scores.bike >= 35 ? "warn" : "no",
-      reason: scores.bike >= 60 ? "Wind and temps are bike-friendly" :
-              scores.bike >= 35 ? "Possible but take care"           : "Wind or rain makes biking risky"
+      reason:
+        scores.bike >= 60
+          ? "Wind and temps are bike-friendly"
+          : scores.bike >= 35
+            ? "Possible but take care"
+            : "Wind or rain makes biking risky",
     },
     {
       label: "Dry Clothes Outside",
       icon: "👗",
       ok: scores.laundry >= 60 ? "yes" : scores.laundry >= 35 ? "warn" : "no",
-      reason: scores.laundry >= 60 ? "Low humidity, good wind"       :
-              scores.laundry >= 35 ? "May take longer than usual"    : "Rain or humidity — use a dryer"
+      reason:
+        scores.laundry >= 60
+          ? "Low humidity, good wind"
+          : scores.laundry >= 35
+            ? "May take longer than usual"
+            : "Rain or humidity — use a dryer",
     },
     {
       label: "Avoid Hair Frizz",
       icon: "💇",
-      ok: scores.frizz.level === "Low" ? "yes" : scores.frizz.level === "Moderate" ? "warn" : "no",
-      reason: scores.frizz.level === "Low"      ? "Low humidity — frizz is unlikely" :
-              scores.frizz.level === "Moderate"  ? "Some frizz possible"              : "High humidity — frizz is very likely"
+      ok:
+        scores.frizz.level === "Low"
+          ? "yes"
+          : scores.frizz.level === "Moderate"
+            ? "warn"
+            : "no",
+      reason:
+        scores.frizz.level === "Low"
+          ? "Low humidity — frizz is unlikely"
+          : scores.frizz.level === "Moderate"
+            ? "Some frizz possible"
+            : "High humidity — frizz is very likely",
     },
     {
       label: "Go Outside",
       icon: "🌿",
       ok: scores.outdoor >= 60 ? "yes" : scores.outdoor >= 35 ? "warn" : "no",
-      reason: scores.outdoor >= 60 ? "Great day to be outside"       :
-              scores.outdoor >= 35 ? "Okay but be mindful of UV/AQI" : "Conditions are not ideal outdoors"
+      reason:
+        scores.outdoor >= 60
+          ? "Great day to be outside"
+          : scores.outdoor >= 35
+            ? "Okay but be mindful of UV/AQI"
+            : "Conditions are not ideal outdoors",
     },
     {
       label: "Sleep Well Tonight",
       icon: "😴",
       ok: scores.sleep >= 60 ? "yes" : scores.sleep >= 35 ? "warn" : "no",
-      reason: scores.sleep >= 60 ? "Comfortable sleeping temperature" :
-              scores.sleep >= 35 ? "Slightly warm or cool tonight"    : "Uncomfortable — adjust accordingly"
+      reason:
+        scores.sleep >= 60
+          ? "Comfortable sleeping temperature"
+          : scores.sleep >= 35
+            ? "Slightly warm or cool tonight"
+            : "Uncomfortable — adjust accordingly",
     },
   ];
 
-  grid.innerHTML = items.map(it => {
-    const symbol = it.ok === "yes" ? "✓" : it.ok === "warn" ? "~" : "✗";
-    return `
+  grid.innerHTML = items
+    .map((it) => {
+      const symbol = it.ok === "yes" ? "✓" : it.ok === "warn" ? "~" : "✗";
+      return `
       <div class="cani-card" role="listitem">
         <div class="cani-badge cani-badge--${it.ok}" aria-hidden="true">${symbol}</div>
         <div>
@@ -359,7 +457,8 @@ function renderCani(scores) {
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 }
 
 function renderScoreCards(scores) {
@@ -367,50 +466,81 @@ function renderScoreCards(scores) {
 
   const cards = [
     {
-      emoji: "🏃", name: "Running Score", sub: "How good today is for a run",
+      emoji: "🏃",
+      name: "Running Score",
+      sub: "How good today is for a run",
       score: scores.running,
-      verdict: scores.running >= 70 ? "<strong>Excellent!</strong> Ideal conditions for running outside."
-             : scores.running >= 50 ? "<strong>Good.</strong> Acceptable — stay hydrated and use SPF."
-             : scores.running >= 30 ? "<strong>Marginal.</strong> Try early morning or after sunset."
-             : "<strong>Poor.</strong> Best to skip or run indoors today."
+      verdict:
+        scores.running >= 70
+          ? "<strong>Excellent!</strong> Ideal conditions for running outside."
+          : scores.running >= 50
+            ? "<strong>Good.</strong> Acceptable — stay hydrated and use SPF."
+            : scores.running >= 30
+              ? "<strong>Marginal.</strong> Try early morning or after sunset."
+              : "<strong>Poor.</strong> Best to skip or run indoors today.",
     },
     {
-      emoji: "👗", name: "Laundry Score", sub: "Clothes drying outdoors",
+      emoji: "👗",
+      name: "Laundry Score",
+      sub: "Clothes drying outdoors",
       score: scores.laundry,
-      verdict: scores.laundry >= 70 ? "<strong>Perfect!</strong> Clothes will dry fast in this weather."
-             : scores.laundry >= 50 ? "<strong>Good.</strong> Should dry — check rain forecast first."
-             : scores.laundry >= 30 ? "<strong>Slow drying.</strong> High humidity is a factor."
-             : "<strong>Use a dryer.</strong> Rain or humidity will keep clothes damp."
+      verdict:
+        scores.laundry >= 70
+          ? "<strong>Perfect!</strong> Clothes will dry fast in this weather."
+          : scores.laundry >= 50
+            ? "<strong>Good.</strong> Should dry — check rain forecast first."
+            : scores.laundry >= 30
+              ? "<strong>Slow drying.</strong> High humidity is a factor."
+              : "<strong>Use a dryer.</strong> Rain or humidity will keep clothes damp.",
     },
     {
-      emoji: "🌿", name: "Outdoor Activity", sub: "General outdoor suitability",
+      emoji: "🌿",
+      name: "Outdoor Activity",
+      sub: "General outdoor suitability",
       score: scores.outdoor,
-      verdict: scores.outdoor >= 70 ? "<strong>Great day outside!</strong> UV and AQI are in good range."
-             : scores.outdoor >= 50 ? "<strong>Manageable.</strong> Apply sunscreen and stay aware."
-             : scores.outdoor >= 30 ? "<strong>Caution.</strong> AQI or UV may be elevated."
-             : "<strong>Stay indoors</strong> if possible — conditions are unfavorable."
+      verdict:
+        scores.outdoor >= 70
+          ? "<strong>Great day outside!</strong> UV and AQI are in good range."
+          : scores.outdoor >= 50
+            ? "<strong>Manageable.</strong> Apply sunscreen and stay aware."
+            : scores.outdoor >= 30
+              ? "<strong>Caution.</strong> AQI or UV may be elevated."
+              : "<strong>Stay indoors</strong> if possible — conditions are unfavorable.",
     },
     {
-      emoji: "😴", name: "Sleep Comfort", sub: "Tonight's sleep comfort",
+      emoji: "😴",
+      name: "Sleep Comfort",
+      sub: "Tonight's sleep comfort",
       score: scores.sleep,
-      verdict: scores.sleep >= 70 ? "<strong>Great night ahead!</strong> Comfortable temperature expected."
-             : scores.sleep >= 50 ? "<strong>Decent.</strong> Light blanket should do it."
-             : scores.sleep >= 30 ? "<strong>Slightly off.</strong> May be too warm or cool."
-             : "<strong>Uncomfortable.</strong> Use AC or extra warmth tonight."
+      verdict:
+        scores.sleep >= 70
+          ? "<strong>Great night ahead!</strong> Comfortable temperature expected."
+          : scores.sleep >= 50
+            ? "<strong>Decent.</strong> Light blanket should do it."
+            : scores.sleep >= 30
+              ? "<strong>Slightly off.</strong> May be too warm or cool."
+              : "<strong>Uncomfortable.</strong> Use AC or extra warmth tonight.",
     },
     {
-      emoji: "🚴", name: "Bike Ride Score", sub: "Cycling suitability",
+      emoji: "🚴",
+      name: "Bike Ride Score",
+      sub: "Cycling suitability",
       score: scores.bike,
-      verdict: scores.bike >= 70 ? "<strong>Let's ride!</strong> Wind and temp are bike-friendly."
-             : scores.bike >= 50 ? "<strong>Rideable.</strong> Watch for wind gusts."
-             : scores.bike >= 30 ? "<strong>Tough.</strong> High wind or rain makes it harder."
-             : "<strong>Skip it.</strong> Conditions are unsafe for cycling."
+      verdict:
+        scores.bike >= 70
+          ? "<strong>Let's ride!</strong> Wind and temp are bike-friendly."
+          : scores.bike >= 50
+            ? "<strong>Rideable.</strong> Watch for wind gusts."
+            : scores.bike >= 30
+              ? "<strong>Tough.</strong> High wind or rain makes it harder."
+              : "<strong>Skip it.</strong> Conditions are unsafe for cycling.",
     },
   ];
 
-  grid.innerHTML = cards.map(c => {
-    const col = scoreColor(c.score);
-    return `
+  grid.innerHTML = cards
+    .map((c) => {
+      const col = scoreColor(c.score);
+      return `
       <div class="score-card" role="listitem">
         <div class="score-header">
           <div class="score-meta">
@@ -428,7 +558,8 @@ function renderScoreCards(scores) {
         <div class="score-verdict">${c.verdict}</div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   /* Hair frizz — separate wide card */
   const fr = scores.frizz;
@@ -448,9 +579,13 @@ function renderScoreCards(scores) {
         <div class="score-bar-fill score-bar-fill--${fr.cls === "high" ? "low" : fr.cls === "med" ? "mid" : "high"}" style="width:${fr.score}%"></div>
       </div>
       <div class="score-verdict">
-        ${fr.level === "Low"      ? "<strong>Low risk.</strong> Humidity is comfortable — your hair should behave today."
-        : fr.level === "Moderate" ? "<strong>Moderate risk.</strong> Some frizz likely — consider a light serum."
-        : "<strong>High risk.</strong> Humidity is elevated — anti-humidity products recommended."}
+        ${
+          fr.level === "Low"
+            ? "<strong>Low risk.</strong> Humidity is comfortable — your hair should behave today."
+            : fr.level === "Moderate"
+              ? "<strong>Moderate risk.</strong> Some frizz likely — consider a light serum."
+              : "<strong>High risk.</strong> Humidity is elevated — anti-humidity products recommended."
+        }
       </div>
     </div>
   `;
@@ -461,14 +596,18 @@ function renderScoreCards(scores) {
 function renderSummary(d, scores) {
   const { intro, bullets } = buildSummary(d, scores);
   document.getElementById("summaryText").textContent = intro;
-  document.getElementById("summaryBullets").innerHTML = bullets.map(b => `<li>${b}</li>`).join("");
+  document.getElementById("summaryBullets").innerHTML = bullets
+    .map((b) => `<li>${b}</li>`)
+    .join("");
 }
 
 function renderForecast(d) {
   const grid = document.getElementById("forecastGrid");
   const days = d.forecast.forecastday;
 
-  grid.innerHTML = days.map((day, i) => `
+  grid.innerHTML = days
+    .map(
+      (day, i) => `
     <div class="forecast-day${i === 0 ? " today" : ""}" role="listitem">
       <div class="fd-weekday">${dayName(day.date, i === 0)}</div>
       <div class="fd-icon">${weatherIcon(day.day.condition.icon)}</div>
@@ -476,16 +615,26 @@ function renderForecast(d) {
       <div class="fd-low">${Math.round(day.day.mintemp_f)}°</div>
       ${day.day.daily_chance_of_rain > 10 ? `<div class="fd-rain">💧 ${day.day.daily_chance_of_rain}%</div>` : ""}
     </div>
-  `).join("");
+  `,
+    )
+    .join("");
 }
 
 function renderOverview(d) {
-  document.getElementById("locationName").textContent = `${d.location.name}, ${d.location.country}`;
-  document.getElementById("localTime").textContent    = d.location.localtime.split(" ")[1];
-  document.getElementById("tempValue").textContent    = Math.round(d.current.temp_f);
-  document.getElementById("weatherCondition").textContent = d.current.condition.text;
-  document.getElementById("feelsLike").textContent    = `Feels like ${fmtTemp(d.current.feelslike_f)}`;
-  document.getElementById("weatherIconWrap").innerHTML = weatherIcon(d.current.condition.icon);
+  document.getElementById("locationName").textContent =
+    `${d.location.name}, ${d.location.country}`;
+  document.getElementById("localTime").textContent =
+    d.location.localtime.split(" ")[1];
+  document.getElementById("tempValue").textContent = Math.round(
+    d.current.temp_f,
+  );
+  document.getElementById("weatherCondition").textContent =
+    d.current.condition.text;
+  document.getElementById("feelsLike").textContent =
+    `Feels like ${fmtTemp(d.current.feelslike_f)}`;
+  document.getElementById("weatherIconWrap").innerHTML = weatherIcon(
+    d.current.condition.icon,
+  );
 }
 
 /* ── API fetch ── */
@@ -512,12 +661,12 @@ async function loadWeather(city) {
 
     /* Compute all scores */
     const scores = {
-      running : calcRunningScore(data),
-      laundry : calcLaundryScore(data),
-      frizz   : calcFrizzRisk(data),
-      outdoor : calcOutdoorScore(data),
-      sleep   : calcSleepScore(data),
-      bike    : calcBikeScore(data),
+      running: calcRunningScore(data),
+      laundry: calcLaundryScore(data),
+      frizz: calcFrizzRisk(data),
+      outdoor: calcOutdoorScore(data),
+      sleep: calcSleepScore(data),
+      bike: calcBikeScore(data),
     };
 
     /* Render sections */
@@ -534,7 +683,6 @@ async function loadWeather(city) {
 
     /* Smooth scroll to results */
     resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
-
   } catch (err) {
     loadingState.hidden = true;
     landingHints.hidden = false;
@@ -563,7 +711,7 @@ searchForm.addEventListener("submit", (e) => {
   loadWeather(city);
 });
 
-document.querySelectorAll(".chip").forEach(btn => {
+document.querySelectorAll(".chip").forEach((btn) => {
   btn.addEventListener("click", () => {
     const city = btn.dataset.city;
     cityInput.value = city;
