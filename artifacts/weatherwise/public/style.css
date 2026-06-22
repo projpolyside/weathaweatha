@@ -308,6 +308,25 @@ body {
   color: var(--secondary);
   margin-top: 6px;
 }
+.unit-toggle {
+  align-self: center;
+  background: var(--primary-bg);
+  border: 1.5px solid var(--primary);
+  color: var(--primary);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-family: var(--font);
+  font-size: .75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  white-space: nowrap;
+  margin-left: 4px;
+}
+.unit-toggle:hover {
+  background: var(--primary);
+  color: #fff;
+}
 .weather-icon-wrap img {
   width: 80px;
   height: 80px;

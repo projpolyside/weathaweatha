@@ -5,6 +5,17 @@
 
 const API_BASE = "/api";
 
+/* ── Unit state ── */
+let unit = "F"; // "F" or "C"
+let lastWeatherData = null;
+
+function toC(f) { return (f - 32) * 5 / 9; }
+function fmtDeg(f) {
+  return unit === "F"
+    ? Math.round(f) + "°F"
+    : Math.round(toC(f)) + "°C";
+}
+
 /* ── DOM refs ── */
 const searchForm = document.getElementById("searchForm");
 const cityInput = document.getElementById("cityInput");
@@ -27,10 +38,6 @@ function scoreColor(score) {
   return "low";
 }
 
-/* Temperature conversion (API returns both C and F) */
-function fmtTemp(f) {
-  return Math.round(f) + "°F";
-}
 
 /* ── Scoring algorithms ── */
 
@@ -306,7 +313,7 @@ function renderStatGrid(d) {
   const stats = [
     {
       label: "Feels Like",
-      value: fmtTemp(d.current.feelslike_f),
+      value: fmtDeg(d.current.feelslike_f),
       desc:
         d.current.temp_f > d.current.feelslike_f
           ? "Cooler than actual"
@@ -610,8 +617,8 @@ function renderForecast(d) {
     <div class="forecast-day${i === 0 ? " today" : ""}" role="listitem">
       <div class="fd-weekday">${dayName(day.date, i === 0)}</div>
       <div class="fd-icon">${weatherIcon(day.day.condition.icon)}</div>
-      <div class="fd-high">${Math.round(day.day.maxtemp_f)}°</div>
-      <div class="fd-low">${Math.round(day.day.mintemp_f)}°</div>
+      <div class="fd-high">${unit === "F" ? Math.round(day.day.maxtemp_f) : Math.round(toC(day.day.maxtemp_f))}°</div>
+      <div class="fd-low">${unit === "F" ? Math.round(day.day.mintemp_f) : Math.round(toC(day.day.mintemp_f))}°</div>
       ${day.day.daily_chance_of_rain > 10 ? `<div class="fd-rain">💧 ${day.day.daily_chance_of_rain}%</div>` : ""}
     </div>
   `,
@@ -624,16 +631,18 @@ function renderOverview(d) {
     `${d.location.name}, ${d.location.country}`;
   document.getElementById("localTime").textContent =
     d.location.localtime.split(" ")[1];
-  document.getElementById("tempValue").textContent = Math.round(
-    d.current.temp_f,
-  );
+  const rawTemp = unit === "F" ? d.current.temp_f : toC(d.current.temp_f);
+  document.getElementById("tempValue").textContent = Math.round(rawTemp);
+  document.getElementById("tempUnit").textContent = unit === "F" ? "°F" : "°C";
   document.getElementById("weatherCondition").textContent =
     d.current.condition.text;
   document.getElementById("feelsLike").textContent =
-    `Feels like ${fmtTemp(d.current.feelslike_f)}`;
+    `Feels like ${fmtDeg(d.current.feelslike_f)}`;
   document.getElementById("weatherIconWrap").innerHTML = weatherIcon(
     d.current.condition.icon,
   );
+  const toggleLabel = document.getElementById("unitToggleLabel");
+  if (toggleLabel) toggleLabel.textContent = unit === "F" ? "Switch to °C" : "Switch to °F";
 }
 
 /* ── API fetch ── */
@@ -657,6 +666,7 @@ async function loadWeather(city) {
 
   try {
     const data = await fetchWeather(city);
+    lastWeatherData = data;
 
     /* Compute all scores */
     const scores = {
@@ -724,4 +734,13 @@ cityInput.addEventListener("keydown", (e) => {
     e.preventDefault();
     searchForm.dispatchEvent(new Event("submit"));
   }
+});
+
+/* ── Unit toggle ── */
+document.getElementById("unitToggle").addEventListener("click", () => {
+  if (!lastWeatherData) return;
+  unit = unit === "F" ? "C" : "F";
+  renderOverview(lastWeatherData);
+  renderStatGrid(lastWeatherData);
+  renderForecast(lastWeatherData);
 });
