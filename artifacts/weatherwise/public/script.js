@@ -3,8 +3,7 @@
    Vanilla JavaScript · WeatherAPI.com
 ───────────────────────────────────────────── */
 
-const API_BASE = "26f52f5124764170b83110956262206";
-
+const API_KEY = "26f52f5124764170b83110956262206";
 /* ── Unit state ── */
 let unit = "F"; // "F" or "C"
 let lastWeatherData = null;
@@ -647,13 +646,25 @@ function renderOverview(d) {
 
 /* ── API fetch ── */
 async function fetchWeather(city) {
-  const url = `${API_BASE}/weather?city=${encodeURIComponent(city)}`;
+  const url =
+    `https://api.weatherapi.com/v1/forecast.json` +
+    `?key=${API_KEY}` +
+    `&q=${encodeURIComponent(city)}` +
+    `&days=7` +
+    `&aqi=yes` +
+    `&alerts=no`;
+
   const res = await fetch(url);
+
+  const data = await res.json();
+
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `Error ${res.status}`);
+    throw new Error(
+      data?.error?.message || `Error ${res.status}`
+    );
   }
-  return res.json();
+
+  return data;
 }
 
 /* ── Main render ── */
