@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WeatherWise — Understand What Today's Weather Means For You</title>
+    <meta name="description" content="WeatherWise converts weather data into practical daily recommendations. Know when to run, ride, dry laundry, and more." />
+    <meta name="google-adsense-account" content="ca-pub-8736297902100969">
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="WeatherWise — Understand What Today's Weather Means For You" />
+    <meta property="og:description" content="WeatherWise converts weather data into practical daily recommendations." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="WeatherWise" />
+    <meta name="twitter:description" content="Weather data converted into practical daily recommendations." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/style.css" />
+
+    <!-- AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8736297902100969" crossorigin="anonymous"></script>
+  </head>
+  <body>
+
+    <!-- ───────────── HEADER ───────────── -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="logo">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <circle cx="14" cy="14" r="6" fill="#2563EB"/>
+            <path d="M14 2v4M14 22v4M2 14h4M22 14h4M5.5 5.5l2.8 2.8M19.7 19.7l2.8 2.8M5.5 22.5l2.8-2.8M19.7 8.3l2.8-2.8" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>WeatherWise</span>
+        </div>
+        <p class="header-tagline">Decisions, not just data</p>
+      </div>
+      <!-- Header Ad Placeholder -->
+      <div class="ad-slot ad-slot--header" aria-label="Advertisement">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-8736297902100969"
+             data-ad-slot="auto"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      </div>
+    </header>
+
+    <main>
+
+      <!-- ───────────── HERO ───────────── -->
+      <section class="hero">
+        <div class="container hero-inner">
+          <h1 class="hero-headline">Understand What Today's<br/><span class="hero-accent">Weather Means For You</span></h1>
+          <p class="hero-sub">Real-time weather data transformed into scores, decisions, and daily guidance — not just numbers.</p>
+
+          <!-- Search -->
+          <form class="search-form" id="searchForm" role="search" aria-label="City search">
+            <div class="search-wrapper">
+              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input
+                type="text"
+                id="cityInput"
+                class="search-input"
+                placeholder="Enter city name (e.g. New York, London, Tokyo)"
+                autocomplete="off"
+                aria-label="City name"
+              />
+              <button type="submit" class="search-btn" aria-label="Search weather">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+                Search
+              </button>
+            </div>
+            <p class="search-hint" id="searchError" role="alert" aria-live="polite"></p>
+          </form>
+
+          <!-- Default city chips -->
+          <div class="city-chips" aria-label="Quick city search">
+            <button class="chip" data-city="New York">New York</button>
+            <button class="chip" data-city="London">London</button>
+            <button class="chip" data-city="Tokyo">Tokyo</button>
+            <button class="chip" data-city="Sydney">Sydney</button>
+            <button class="chip" data-city="Dubai">Dubai</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── LOADING ───────────── -->
+      <div class="loading-state" id="loadingState" aria-live="polite" aria-busy="true" hidden>
+        <div class="container">
+          <div class="loading-spinner" role="status">
+            <span class="sr-only">Fetching weather data…</span>
+          </div>
+          <p class="loading-text">Fetching weather data…</p>
+        </div>
+      </div>
+
+      <!-- ───────────── RESULTS ───────────── -->
+      <div id="resultsSection" hidden>
+
+        <!-- Weather Overview -->
+        <section class="section" aria-labelledby="overviewHeading">
+          <div class="container">
+            <div class="weather-overview" id="weatherOverview">
+              <div class="overview-left">
+                <div class="location-row">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  <span id="locationName" class="location-name">—</span>
+                  <span id="localTime" class="local-time"></span>
+                </div>
+                <div class="temp-row">
+                  <span id="tempValue" class="temp-big">—</span>
+                  <span class="temp-unit">°F</span>
+                  <span id="weatherCondition" class="weather-condition"></span>
+                </div>
+                <div id="feelsLike" class="feels-like"></div>
+              </div>
+              <div class="overview-right">
+                <div class="weather-icon-wrap" id="weatherIconWrap" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <!-- Stat pills -->
+            <div class="stat-grid" id="statGrid" role="list" aria-label="Weather statistics"></div>
+          </div>
+        </section>
+
+        <!-- Ad slot mid-content -->
+        <div class="ad-slot ad-slot--mid container" aria-label="Advertisement">
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-8736297902100969"
+               data-ad-slot="auto"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <!-- Can I? Section -->
+        <section class="section" aria-labelledby="caniHeading">
+          <div class="container">
+            <h2 class="section-title" id="caniHeading">Can I Today?</h2>
+            <p class="section-sub">Quick yes/no checks for today's weather</p>
+            <div class="cani-grid" id="caniGrid" role="list" aria-label="Activity checks"></div>
+          </div>
+        </section>
+
+        <!-- Decision Score Cards -->
+        <section class="section" aria-labelledby="scoresHeading">
+          <div class="container">
+            <h2 class="section-title" id="scoresHeading">Decision Scores</h2>
+            <p class="section-sub">Each score is calculated from live weather data</p>
+            <div class="scores-grid" id="scoresGrid" role="list" aria-label="Decision score cards"></div>
+          </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section section--summary" aria-labelledby="summaryHeading">
+          <div class="container">
+            <h2 class="section-title" id="summaryHeading">Today's Summary</h2>
+            <div class="summary-card" id="summaryCard">
+              <p id="summaryText" class="summary-text"></p>
+              <ul id="summaryBullets" class="summary-bullets" aria-label="Recommendations"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Forecast -->
+        <section class="section" aria-labelledby="forecastHeading">
+          <div class="container">
+            <h2 class="section-title" id="forecastHeading">7-Day Forecast</h2>
+            <div class="forecast-grid" id="forecastGrid" role="list" aria-label="7-day forecast"></div>
+          </div>
+        </section>
+
+      </div>
+      <!-- /resultsSection -->
+
+      <!-- Empty / Landing state (before any search) -->
+      <div id="landingHints" class="landing-hints">
+        <div class="container">
+          <div class="hints-grid">
+            <div class="hint-card">
+              <div class="hint-icon">🏃</div>
+              <h3>Running Score</h3>
+              <p>Considers temperature, humidity, UV index, and air quality to rate how good today is for a run.</p>
+            </div>
+            <div class="hint-card">
+              <div class="hint-icon">👗</div>
+              <h3>Laundry Score</h3>
+              <p>Factors wind speed, humidity, and rain chance to tell you whether clothes will dry outside today.</p>
+            </div>
+            <div class="hint-card">
+              <div class="hint-icon">💇</div>
+              <h3>Hair Frizz Risk</h3>
+              <p>Humidity-based risk level so you know whether to fight the frizz before stepping out.</p>
+            </div>
+            <div class="hint-card">
+              <div class="hint-icon">🚴</div>
+              <h3>Bike Ride Score</h3>
+              <p>Wind speed, rain probability, and temperature combined into one cycling suitability score.</p>
+            </div>
+            <div class="hint-card">
+              <div class="hint-icon">🌿</div>
+              <h3>Outdoor Activity</h3>
+              <p>A composite score weighing UV, AQI, temperature, and precipitation for any outdoor plan.</p>
+            </div>
+            <div class="hint-card">
+              <div class="hint-icon">😴</div>
+              <h3>Sleep Comfort</h3>
+              <p>Night temperature and humidity blended to predict how comfortable tonight's sleep will be.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ───────────── FOOTER ───────────── -->
+    <footer class="site-footer">
+      <!-- Footer Ad -->
+      <div class="ad-slot ad-slot--footer container" aria-label="Advertisement">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-8736297902100969"
+             data-ad-slot="auto"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      </div>
+      <div class="container footer-inner">
+        <div class="footer-logo">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <circle cx="14" cy="14" r="6" fill="#2563EB"/>
+            <path d="M14 2v4M14 22v4M2 14h4M22 14h4M5.5 5.5l2.8 2.8M19.7 19.7l2.8 2.8M5.5 22.5l2.8-2.8M19.7 8.3l2.8-2.8" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>WeatherWise</span>
+        </div>
+        <p class="footer-copy">Weather data powered by <a href="https://www.weatherapi.com" rel="noopener noreferrer" target="_blank">WeatherAPI.com</a> &middot; Scores are estimates and not a substitute for professional advice.</p>
+        <p class="footer-legal">&copy; <span id="footerYear"></span> WeatherWise. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="/script.js"></script>
+  </body>
+</html>
