@@ -27,14 +27,18 @@
     <!-- ───────────── HEADER ───────────── -->
     <header class="site-header">
       <div class="container header-inner">
-        <div class="logo">
+        <a href="/" class="logo">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
             <circle cx="14" cy="14" r="6" fill="#2563EB"/>
             <path d="M14 2v4M14 22v4M2 14h4M22 14h4M5.5 5.5l2.8 2.8M19.7 19.7l2.8 2.8M5.5 22.5l2.8-2.8M19.7 8.3l2.8-2.8" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
           </svg>
           <span>WeatherWise</span>
-        </div>
-        <p class="header-tagline">Decisions, not just data</p>
+        </a>
+        <nav class="header-nav" aria-label="Main navigation">
+          <a href="/" class="nav-link nav-link--active">Home</a>
+          <a href="/about.html" class="nav-link">About</a>
+          <a href="/contact.html" class="nav-link">Contact</a>
+        </nav>
       </div>
       <!-- Header Ad Placeholder -->
       <div class="ad-slot ad-slot--header" aria-label="Advertisement">
@@ -229,26 +233,41 @@
 
     <!-- ───────────── FOOTER ───────────── -->
     <footer class="site-footer">
-      <!-- Footer Ad -->
       <div class="ad-slot ad-slot--footer container" aria-label="Advertisement">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-8736297902100969"
-             data-ad-slot="auto"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8736297902100969" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
       </div>
-      <div class="container footer-inner">
-        <div class="footer-logo">
-          <svg width="20" height="20" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-            <circle cx="14" cy="14" r="6" fill="#2563EB"/>
-            <path d="M14 2v4M14 22v4M2 14h4M22 14h4M5.5 5.5l2.8 2.8M19.7 19.7l2.8 2.8M5.5 22.5l2.8-2.8M19.7 8.3l2.8-2.8" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span>WeatherWise</span>
+      <div class="container footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <svg width="20" height="20" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+              <circle cx="14" cy="14" r="6" fill="#2563EB"/>
+              <path d="M14 2v4M14 22v4M2 14h4M22 14h4M5.5 5.5l2.8 2.8M19.7 19.7l2.8 2.8M5.5 22.5l2.8-2.8M19.7 8.3l2.8-2.8" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>WeatherWise</span>
+          </div>
+          <p class="footer-brand-desc">Decisions, not just data.</p>
+          <p class="footer-copy">Scores are estimates and not a substitute for professional advice. See our <a href="/disclaimer.html">Disclaimer</a>.</p>
         </div>
-        <p class="footer-copy">Weather data powered by <a href="https://www.weatherapi.com" rel="noopener noreferrer" target="_blank">WeatherAPI.com</a> &middot; Scores are estimates and not a substitute for professional advice.</p>
-        <p class="footer-legal">&copy; <span id="footerYear"></span> WeatherWise. All rights reserved.</p>
+        <div class="footer-col">
+          <h4>Navigate</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="/privacy.html">Privacy Policy</a></li>
+            <li><a href="/terms.html">Terms of Service</a></li>
+            <li><a href="/disclaimer.html">Disclaimer</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="container footer-bottom">
+        <p>&copy; <span id="footerYear"></span> WeatherWise. All rights reserved. Weather data by <a href="https://www.weatherapi.com" rel="noopener noreferrer" target="_blank">WeatherAPI.com</a>.</p>
       </div>
     </footer>
 
