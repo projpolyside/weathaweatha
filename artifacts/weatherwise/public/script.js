@@ -3,7 +3,7 @@
    Vanilla JavaScript · WeatherAPI.com
 ───────────────────────────────────────────── */
 
-const API_KEY = "26f52f5124764170b83110956262206";
+const API_KEY = "0340a2e753ed4e4390e120643263006";
 /* ── Unit state ── */
 let unit = "F"; // "F" or "C"
 let lastWeatherData = null;
